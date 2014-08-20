@@ -25,11 +25,10 @@ Ciaran Archer
 - A Rails implemenation
 
 - Change at Zendesk; monolithic to SOA
-- Decoupling Voice
 
-- Go as event pipeline
 - Maestro
 - Call event workflow in Ruby
+- Go as event pipeline
 
 - Pros & Cons
 - Everlearn
@@ -37,13 +36,14 @@ Ciaran Archer
 
 * Intro to Go
 
-- Something
+- TODO
 
 
 * Concurrency in Go
 
 - Goroutines: Lightweight threads of execution
-- Channels
+- Channels: Don't communicate by sharing memory; share memory by communicating
+- `select` over channels
 
 * Goroutines
 
@@ -59,6 +59,12 @@ Blocking Example
 
 .play -edit -numbers channels_blocking.go /START NO OMIT/,/END NO OMIT/
 
+* Channels (3)
+
+`select` Example
+
+.play -edit -numbers select.go /START NO OMIT/,/END NO OMIT/
+
 * Realtime voice (1)
 
 Events, everywhere.
@@ -72,5 +78,76 @@ Unicorn fight!
 .image images/voice_events_unicorn.png 300 500
 
 => StaleObjectException ( ≧Д≦)
+
+* Realtime voice (3)
+
+Original Implementation in Rails
+
+- `statemachine` gem mixed into an ActiveRecord `Call` object
+- Optimistic locking
+- Retry strategy
+- Difficult abstraction to build new complex features upon
+
+* Change at Zendesk; monolithic to SOA
+
+- Used to be very few seperate services; one monolithic Rails app
+- Now more than 50 seperate deployable apps
+- Voice is one
+- Bar for new services much lower; better shared gems & standards
+
+* A process to manage call state
+
+- Big idea was a seperate process that managed call events and states
+- Christened *Maestro*: a conductor for calls
+- Deployed as just another service within Zendesk
+
+* Why not Ruby?
+
+- Maybe EventMachine or Celluloid
+- Give us concurrency, but hard to get blocking semantics
+- Go felt like the right tool for the job, largely because of concurrency support
+
+* Limited rewrite
+
+- Leverage battle-tested Ruby code where possible, e.g. ticket creation, group routing
+- Maestro is very functional and stores no state; defers to internal APIs to update call
+- Call state transitions as a service
+- Core concepts spiked and validated in one internal hackaton
+
+* Maestro
+
+- Rails receives call events and passes them to Maestro
+- Maestro does one thing well: handles call state transitions
+- Returns a list of 'side effects' back to Rails: like 'create a ticket', or 'teardown call'
+
+.image images/maestro_flow.png 400 500
+
+* Maestro as an Event Pipeline
+
+- Create one goroutine per call
+- Send messages (call events) to this goroutine using a channel
+- Blocks until next event is read => pipeline of events
+- Manage concurrency explicitly
+
+.image images/pipeline.png 100 550
+
+* Demo 1: Basic web server consuming JSON
+
+Web server:
+
+    run demo_server.go
+
+Request:
+
+    curl http://localhost:1234 -d  '{"call_id": 1, "event":"incoming_call"}'
+
+
+* Demo 2: Add goroutine per call
+
+
+
+
+
+
 
 
