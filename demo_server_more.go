@@ -19,7 +19,7 @@ type Call struct {
 	Done   chan bool
 }
 
-var calls = make(map[int]*Call)
+var calls = make(map[int]Call)
 
 func handleCall(w http.ResponseWriter, r *http.Request) {
 	request := Request{}
@@ -31,29 +31,29 @@ func handleCall(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	_, exists := calls[request.CallID]
+	call, exists := calls[request.CallID]
 	if !exists {
-		call := &Call{ID: request.CallID, Events: make(chan string), Done: make(chan bool)}
+		call = Call{ID: request.CallID, Events: make(chan string), Done: make(chan bool)}
 		calls[request.CallID] = call
-		process(call)
+		go process(call)
+		fmt.Println("Created goroutine for call", call.ID)
 	} else {
-		fmt.Println("Using existing call goroutine", request.CallID)
+		fmt.Println("Using existing call goroutine for call", call.ID)
 	}
 
-	calls[request.CallID].Events <- request.Event
-
-	fmt.Println(request)
+	call.Events <- request.Event
 	fmt.Fprintln(w, "Hello! call ID", request.CallID, "with event", request.Event)
 
+	// TODO block on receive from call.Done
 }
 
-func process(call *Call) {
-	go func() {
+func process(c Call) {
+	for {
 		select {
-		case e := <-call.Events:
-			fmt.Println("call ID", call.ID, "processing event", e)
+		case e := <-c.Events:
+			fmt.Println("call ID", c.ID, "processing event", e)
 		}
-	}()
+	}
 }
 
 func main() {
