@@ -1,0 +1,76 @@
+Ruby & Go: Rebuilding Zendesk Voice
+26 Aug 2014
+
+Ciaran Archer
+Principal Engineer, Zendesk
+ciaran@zendesk.com
+
+@ciaranarcher
+
+* whoami
+
+Ciaran Archer
+
+- Working on Voice at Zendesk since Feb 2013
+- Java, Coldfusion, Javascript, Ruby/JRuby, Go
+- Part of a great Zendesk engineering team & culture
+
+.image images/mongooses.png 140 489
+.image images/skyfox.png 145 485
+
+* Agenda
+
+- Intro to Go concurrency
+- Realtime voice & concurrency
+- A Rails implemenation
+
+- Change at Zendesk; monolithic to SOA
+- Decoupling Voice
+
+- Go as event pipeline
+- Maestro
+- Call event workflow in Ruby
+
+- Pros & Cons
+- Everlearn
+- Opensourcing
+
+* Intro to Go
+
+- Something
+
+
+* Concurrency in Go
+
+- Goroutines: Lightweight threads of execution
+- Channels
+
+* Goroutines
+
+.play -edit -numbers goroutines.go /START NO OMIT/,/END NO OMIT/
+
+* Channels (1)
+
+.play -edit -numbers channels.go /START NO OMIT/,/END NO OMIT/
+
+* Channels (2)
+
+Blocking Example
+
+.play -edit -numbers channels_blocking.go /START NO OMIT/,/END NO OMIT/
+
+* Realtime voice (1)
+
+Events, everywhere.
+
+.image images/voice_events.png 413 392
+
+* Realtime voice (2)
+
+Unicorn fight!
+
+.image images/voice_events_unicorn.png 300 500
+
+=> StaleObjectException ( ≧Д≦)
+
+
