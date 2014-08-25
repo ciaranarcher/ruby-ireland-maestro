@@ -33,7 +33,7 @@ Ciaran Archer
 - In Production
 - Rails Interop
 - Learnings
-- Open Source
+- New Packages
 
 * Caveat
 
@@ -50,8 +50,9 @@ We're still working on this, so...
 
 - Feels dynamic; quick compilation
 - Flexible interface system
+- Stable
 
-Look what the lunatics left out :D
+What did they leave out?
 
 - no traditional inheritance (type embedding instead)
 - no method or operator overloading
@@ -59,6 +60,7 @@ Look what the lunatics left out :D
 - no pointer arithmetic
 - no assertions
 - no generic programming
+
 
 * Concurrency in Go
 
@@ -101,7 +103,6 @@ Unicorn fight!
 => StaleObjectException ( ≧Д≦)
 
 * Realtime voice (3)
-
 
 20K+ calls / 24hrs
 Original Implementation in Rails
@@ -175,12 +176,12 @@ Request:
 
     curl http://localhost:1234 -d  '{"call_id": 1, "event":"incoming_call"}'
 
-- Creates a goroutines with two channels, `Events` and `Done`
+- Creates a goroutine for each call with two channels, `Events` and `Done`
 - Cleans up goroutines created
 
 * Problem
 
-- There was flaw in the code, can you see it? 
+- There was flaw in the code, can you see it?
 
 
 * In Production
@@ -202,7 +203,7 @@ Request:
 - Prototype proof-of-concept
 - Introducing new tech is hard: need to win hearts and minds
 
-* Open Source
+* New Packages
 
 - Created libs for internal use (auth, Datadog and GoRelic wrappers)
 - Open sourced a HTTP logger/formatter (https://github.com/zendesk/go-httpclerk)

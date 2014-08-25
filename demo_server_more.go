@@ -24,22 +24,25 @@ var calls = make(map[int]callProcessor)
 
 func handleCall(w http.ResponseWriter, r *http.Request) {
 	params := params{}
-	data, _ := ioutil.ReadAll(r.Body)
 
-	err := json.Unmarshal(data, &params)
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	err = json.Unmarshal(data, &params)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	call, exists := calls[params.CallID]
-	if !exists {
+	if exists {
+		fmt.Println("Using existing goroutine for call", call.ID)
+	} else {
 		call = callProcessor{ID: params.CallID, Events: make(chan string), Done: make(chan bool)}
 		calls[params.CallID] = call
 		go process(call)
 		fmt.Println("Created goroutine for call", call.ID)
-	} else {
-		fmt.Println("Using existing goroutine for call", call.ID)
 	}
 
 	call.Events <- params.Event
@@ -52,7 +55,7 @@ func process(c callProcessor) {
 	for {
 		select {
 		case e := <-c.Events:
-			time.Sleep(1 * time.Second)
+			time.Sleep(1 * time.Second) // Simulate some work
 			fmt.Println("Call ID", c.ID, "processed event", e, "successfully.")
 			c.Done <- true
 		case <-timeout:

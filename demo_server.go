@@ -13,18 +13,21 @@ type params struct {
 	Event  string
 }
 
-func handleCall(w http.ResponseWriter, req *http.Request) {
+func handleCall(res http.ResponseWriter, req *http.Request) {
 	params := params{}
-	data, _ := ioutil.ReadAll(req.Body)
 
-	err := json.Unmarshal(data, &params)
+	data, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Fatal("error reading body ", err)
+	}
 
+	err = json.Unmarshal(data, &params)
 	if err != nil {
 		log.Fatal("error parsing ", err)
 	}
 
 	fmt.Println(params)
-	fmt.Fprintln(w, "Hello! call ID", params.CallID, "with event", params.Event)
+	fmt.Fprintln(res, "Hello! call ID", params.CallID, "with event", params.Event)
 }
 
 func main() {
