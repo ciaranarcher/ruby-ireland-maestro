@@ -8,23 +8,23 @@ import (
 	"net/http"
 )
 
-type Request struct {
+type params struct {
 	CallID int `json:"call_id"`
 	Event  string
 }
 
-func handleCall(w http.ResponseWriter, r *http.Request) {
-	request := Request{}
-	data, _ := ioutil.ReadAll(r.Body)
+func handleCall(w http.ResponseWriter, req *http.Request) {
+	params := params{}
+	data, _ := ioutil.ReadAll(req.Body)
 
-	err := json.Unmarshal(data, &request)
+	err := json.Unmarshal(data, &params)
 
 	if err != nil {
 		log.Fatal("error parsing ", err)
 	}
 
-	fmt.Println(request)
-	fmt.Fprintln(w, "Hello! call ID", request.CallID, "with event", request.Event)
+	fmt.Println(params)
+	fmt.Fprintln(w, "Hello! call ID", params.CallID, "with event", params.Event)
 }
 
 func main() {
